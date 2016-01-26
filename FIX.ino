@@ -5,8 +5,10 @@
 //String ip="192,168,0,11";
 byte mac[] = { 0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x01 };                           // RESERVED MAC ADDRESS
 
-char server[] = "172.20.10.3";   
-IPAddress ip(172, 20, 10, 70);
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte ip[] = { 172, 20, 10, 70 };
+byte server[] = { 172, 20, 10, 3 }; // Google
+
 EthernetClient client;
 
 #define DHTPIN 2 // SENSOR PIN
@@ -57,19 +59,21 @@ void loop(){
 
 	if (client.connect(server,80)) { 
 		Serial.println("connected");
-                client.print("GET /projekta/add.php"); 
-		client.print("Host: 172.20.10.3"); // SERVER ADDRESS HERE TOO
-		client.print("?suhu="); 
+                client.print("GET /projekta/add.php?"); 
+		client.print("suhu="); 
                 client.print((int) dht.readTemperature());
 		client.print("&kelembapan="); 
                 client.print((int) dht.readHumidity());
-		client.println(" HTTP/1.0); 		
+		client.print(" HTTP/1.0"); 
+		client.print("Host: 172.20.10.3"); // SERVER ADDRESS HERE TOO		 
+		client.println( "Content-Type: application/x-www-form-urlencoded" );
+		client.println( "Connection: close" );
 		client.println();
-	} 
-
-	if (client.connected()) { 
+		client.println();
+		
 		client.stop();	// DISCONNECT FROM THE SERVER
-	}
+		
+	} 
         else {
            
             Serial.println("connection failed");
